@@ -66,6 +66,9 @@ button.danger { background: #dc2626; }
 button.danger:hover { background: #b91c1c; }
 
 button.secondary { background: #6b7280; }
+button.secondary:hover { background: #4b5563; }
+
+table td button + button { margin-left: 6px; }
 
 table {
   width: 100%;

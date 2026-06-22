@@ -200,7 +200,7 @@ def delete_course(cid):
 def list_grades(keyword=""):
     conn = get_conn()
     sql = """
-        SELECT g.id, g.score, g.exam_term,
+        SELECT g.id, g.student_id, g.course_id, g.score, g.exam_term,
                s.student_no, s.name AS student_name, s.class_name,
                c.course_no, c.course_name
         FROM grades g
