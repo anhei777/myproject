@@ -102,9 +102,6 @@ student-grade-system/
 │   ├── stats.html
 │   ├── student-home.html  # 学生首页
 │   └── my-grades.html     # 学生成绩页
-└── docs/
-    ├── 实习报告.md
-    └── images/            # 报告配图
 ```
 
 ### 分层说明
