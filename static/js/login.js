@@ -9,7 +9,11 @@ document.getElementById("btnLogin").onclick = function () {
   API.login(username, password).then(function (res) {
     if (res.code === 0) {
       sessionStorage.setItem("user", JSON.stringify(res.data));
-      window.location.href = "/index.html";
+      if (res.data.role === "student") {
+        window.location.href = "/student-home.html";
+      } else {
+        window.location.href = "/index.html";
+      }
     } else {
       msg.textContent = res.msg;
     }
@@ -27,7 +31,7 @@ document.getElementById("btnRegister").onclick = function () {
   API.register(username, password).then(function (res) {
     if (res.code === 0) {
       msg.style.color = "#16a34a";
-      msg.textContent = "注册成功，请登录";
+      msg.textContent = "管理员账号注册成功，请登录";
     } else {
       msg.style.color = "#dc2626";
       msg.textContent = res.msg;

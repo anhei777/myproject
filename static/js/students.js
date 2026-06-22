@@ -1,4 +1,4 @@
-checkLogin();
+checkAdmin();
 document.getElementById("btnLogout").onclick = function (e) {
   e.preventDefault();
   logout();

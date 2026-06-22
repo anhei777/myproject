@@ -1,7 +1,8 @@
 function apiRequest(url, method, body) {
   var options = {
     method: method || "GET",
-    headers: { "Content-Type": "application/json" }
+    headers: { "Content-Type": "application/json" },
+    credentials: "same-origin"
   };
   if (body) {
     options.body = JSON.stringify(body);
@@ -20,17 +21,48 @@ function checkLogin() {
   return JSON.parse(user);
 }
 
+function checkAdmin() {
+  var user = checkLogin();
+  if (!user) return null;
+  if (user.role !== "admin") {
+    window.location.href = "/student-home.html";
+    return null;
+  }
+  return user;
+}
+
+function checkStudent() {
+  var user = checkLogin();
+  if (!user) return null;
+  if (user.role !== "student") {
+    window.location.href = "/index.html";
+    return null;
+  }
+  return user;
+}
+
 function logout() {
-  sessionStorage.removeItem("user");
-  window.location.href = "/login.html";
+  API.logout().then(function () {
+    sessionStorage.removeItem("user");
+    window.location.href = "/login.html";
+  });
 }
 
 var API = {
   login: function (username, password) {
     return apiRequest("/api/login", "POST", { username: username, password: password });
   },
+  logout: function () {
+    return apiRequest("/api/logout", "POST", {});
+  },
   register: function (username, password) {
     return apiRequest("/api/register", "POST", { username: username, password: password });
+  },
+  getMe: function () {
+    return apiRequest("/api/me");
+  },
+  getMyGrades: function () {
+    return apiRequest("/api/my/grades");
   },
   getStudents: function (keyword) {
     var url = "/api/students";

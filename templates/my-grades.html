@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的成绩 - 学生成绩管理系统</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="header">
+    <h1>学生成绩管理系统</h1>
+    <div class="nav">
+      <a href="/student-home.html">我的首页</a>
+      <a href="/my-grades.html">我的成绩</a>
+      <a href="#" id="btnLogout">退出</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card">
+      <h2>我的成绩</h2>
+      <p id="studentTip" style="color:#64748b;margin-bottom:12px"></p>
+      <table>
+        <thead>
+          <tr>
+            <th>课程编号</th>
+            <th>课程名称</th>
+            <th>学分</th>
+            <th>分数</th>
+            <th>学期</th>
+          </tr>
+        </thead>
+        <tbody id="gradeTable"></tbody>
+      </table>
+      <p id="emptyTip" class="msg" hidden>暂无成绩记录</p>
+    </div>
+  </div>
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/my-grades.js"></script>
+</body>
+</html>

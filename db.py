@@ -14,7 +14,33 @@ def init_db():
     conn = get_conn()
     conn.executescript(sql)
     conn.commit()
+    migrate_db(conn)
     conn.close()
+
+
+def migrate_db(conn=None):
+    close_after = False
+    if conn is None:
+        conn = get_conn()
+        close_after = True
+    cols = [r[1] for r in conn.execute("PRAGMA table_info(users)").fetchall()]
+    if "role" not in cols:
+        conn.execute("ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'admin'")
+    if "student_id" not in cols:
+        conn.execute("ALTER TABLE users ADD COLUMN student_id INTEGER")
+    student_users = [
+        (2, "2024001", "123456", "student", 1),
+        (3, "2024002", "123456", "student", 2),
+        (4, "2024003", "123456", "student", 3),
+    ]
+    for u in student_users:
+        conn.execute(
+            "INSERT OR IGNORE INTO users (id, username, password, role, student_id) VALUES (?, ?, ?, ?, ?)",
+            u,
+        )
+    conn.commit()
+    if close_after:
+        conn.close()
 
 
 def row_to_dict(row):
@@ -31,7 +57,7 @@ def rows_to_list(rows):
 def login_user(username, password):
     conn = get_conn()
     row = conn.execute(
-        "SELECT id, username FROM users WHERE username=? AND password=?",
+        "SELECT id, username, role, student_id FROM users WHERE username=? AND password=?",
         (username, password),
     ).fetchone()
     conn.close()
@@ -42,7 +68,7 @@ def register_user(username, password):
     conn = get_conn()
     try:
         conn.execute(
-            "INSERT INTO users (username, password) VALUES (?, ?)",
+            "INSERT INTO users (username, password, role, student_id) VALUES (?, ?, 'admin', NULL)",
             (username, password),
         )
         conn.commit()
@@ -51,6 +77,13 @@ def register_user(username, password):
         return False, "username exists"
     finally:
         conn.close()
+
+
+def get_student_profile(student_id):
+    conn = get_conn()
+    row = conn.execute("SELECT * FROM students WHERE id=?", (student_id,)).fetchone()
+    conn.close()
+    return row_to_dict(row)
 
 
 # ---------- students ----------
@@ -180,6 +213,23 @@ def list_grades(keyword=""):
         rows = conn.execute(sql + " ORDER BY g.id", (kw, kw, kw, kw)).fetchall()
     else:
         rows = conn.execute(sql + " ORDER BY g.id").fetchall()
+    conn.close()
+    return rows_to_list(rows)
+
+
+def list_grades_by_student(student_id):
+    conn = get_conn()
+    rows = conn.execute(
+        """
+        SELECT g.id, g.score, g.exam_term,
+               c.course_no, c.course_name, c.credit
+        FROM grades g
+        JOIN courses c ON g.course_id = c.id
+        WHERE g.student_id = ?
+        ORDER BY g.exam_term, c.course_no
+        """,
+        (student_id,),
+    ).fetchall()
     conn.close()
     return rows_to_list(rows)
 

@@ -2,7 +2,10 @@
 CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL
+    password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'admin',
+    student_id INTEGER,
+    FOREIGN KEY (student_id) REFERENCES students(id)
 );
 
 -- students
@@ -34,8 +37,15 @@ CREATE TABLE IF NOT EXISTS grades (
     UNIQUE(student_id, course_id, exam_term)
 );
 
--- default admin
-INSERT OR IGNORE INTO users (id, username, password) VALUES (1, 'admin', '123456');
+-- admin account
+INSERT OR IGNORE INTO users (id, username, password, role, student_id) VALUES
+(1, 'admin', '123456', 'admin', NULL);
+
+-- student accounts (username = student_no)
+INSERT OR IGNORE INTO users (id, username, password, role, student_id) VALUES
+(2, '2024001', '123456', 'student', 1),
+(3, '2024002', '123456', 'student', 2),
+(4, '2024003', '123456', 'student', 3);
 
 -- sample students
 INSERT OR IGNORE INTO students (id, student_no, name, class_name, gender) VALUES
@@ -55,4 +65,6 @@ INSERT OR IGNORE INTO grades (id, student_id, course_id, score, exam_term) VALUE
 (2, 1, 2, 92.0, '2025-2026-1'),
 (3, 2, 1, 76.0, '2025-2026-1'),
 (4, 2, 3, 58.0, '2025-2026-1'),
-(5, 3, 2, 85.0, '2025-2026-1');
+(5, 3, 2, 85.0, '2025-2026-1'),
+(6, 3, 1, 72.0, '2025-2026-1'),
+(7, 3, 3, 66.0, '2025-2026-1');

@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request, jsonify, send_from_directory
+from functools import wraps
+from flask import Flask, request, jsonify, send_from_directory, session
 import db
 from config import HOST, PORT, SECRET_KEY
 
@@ -13,6 +14,37 @@ def ok(data=None, msg="ok"):
 
 def fail(msg="error", code=1):
     return jsonify({"code": code, "msg": msg, "data": None})
+
+
+def require_login(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        if not session.get("user_id"):
+            return fail("not logged in", 401)
+        return f(*args, **kwargs)
+    return wrapped
+
+
+def require_admin(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        if not session.get("user_id"):
+            return fail("not logged in", 401)
+        if session.get("role") != "admin":
+            return fail("admin only", 403)
+        return f(*args, **kwargs)
+    return wrapped
+
+
+def require_student(f):
+    @wraps(f)
+    def wrapped(*args, **kwargs):
+        if not session.get("user_id"):
+            return fail("not logged in", 401)
+        if session.get("role") != "student":
+            return fail("student only", 403)
+        return f(*args, **kwargs)
+    return wrapped
 
 
 # ---------- pages ----------
@@ -38,9 +70,19 @@ def api_login():
     if not username or not password:
         return fail("username and password required")
     user = db.login_user(username, password)
-    if user:
-        return ok(user)
-    return fail("login failed")
+    if not user:
+        return fail("login failed")
+    session["user_id"] = user["id"]
+    session["username"] = user["username"]
+    session["role"] = user["role"]
+    session["student_id"] = user.get("student_id")
+    return ok(user)
+
+
+@app.route("/api/logout", methods=["POST"])
+def api_logout():
+    session.clear()
+    return ok(msg="logout ok")
 
 
 @app.route("/api/register", methods=["POST"])
@@ -56,14 +98,37 @@ def api_register():
     return fail(msg)
 
 
+@app.route("/api/me", methods=["GET"])
+@require_login
+def api_me():
+    data = {
+        "id": session.get("user_id"),
+        "username": session.get("username"),
+        "role": session.get("role"),
+        "student_id": session.get("student_id"),
+    }
+    if session.get("role") == "student" and session.get("student_id"):
+        data["profile"] = db.get_student_profile(session["student_id"])
+    return ok(data)
+
+
+# ---------- student self service ----------
+@app.route("/api/my/grades", methods=["GET"])
+@require_student
+def api_my_grades():
+    return ok(db.list_grades_by_student(session["student_id"]))
+
+
 # ---------- students ----------
 @app.route("/api/students", methods=["GET"])
+@require_admin
 def api_students_list():
     keyword = request.args.get("keyword", "").strip()
     return ok(db.list_students(keyword))
 
 
 @app.route("/api/students", methods=["POST"])
+@require_admin
 def api_students_add():
     data = request.get_json() or {}
     success, msg = db.add_student(
@@ -78,6 +143,7 @@ def api_students_add():
 
 
 @app.route("/api/students/<int:sid>", methods=["PUT"])
+@require_admin
 def api_students_update(sid):
     data = request.get_json() or {}
     if db.update_student(
@@ -92,6 +158,7 @@ def api_students_update(sid):
 
 
 @app.route("/api/students/<int:sid>", methods=["DELETE"])
+@require_admin
 def api_students_delete(sid):
     if db.delete_student(sid):
         return ok(msg="delete ok")
@@ -100,12 +167,14 @@ def api_students_delete(sid):
 
 # ---------- courses ----------
 @app.route("/api/courses", methods=["GET"])
+@require_login
 def api_courses_list():
     keyword = request.args.get("keyword", "").strip()
     return ok(db.list_courses(keyword))
 
 
 @app.route("/api/courses", methods=["POST"])
+@require_admin
 def api_courses_add():
     data = request.get_json() or {}
     success, msg = db.add_course(
@@ -119,6 +188,7 @@ def api_courses_add():
 
 
 @app.route("/api/courses/<int:cid>", methods=["PUT"])
+@require_admin
 def api_courses_update(cid):
     data = request.get_json() or {}
     if db.update_course(
@@ -132,6 +202,7 @@ def api_courses_update(cid):
 
 
 @app.route("/api/courses/<int:cid>", methods=["DELETE"])
+@require_admin
 def api_courses_delete(cid):
     if db.delete_course(cid):
         return ok(msg="delete ok")
@@ -140,12 +211,14 @@ def api_courses_delete(cid):
 
 # ---------- grades ----------
 @app.route("/api/grades", methods=["GET"])
+@require_admin
 def api_grades_list():
     keyword = request.args.get("keyword", "").strip()
     return ok(db.list_grades(keyword))
 
 
 @app.route("/api/grades", methods=["POST"])
+@require_admin
 def api_grades_add():
     data = request.get_json() or {}
     success, msg = db.add_grade(
@@ -160,6 +233,7 @@ def api_grades_add():
 
 
 @app.route("/api/grades/<int:gid>", methods=["PUT"])
+@require_admin
 def api_grades_update(gid):
     data = request.get_json() or {}
     if db.update_grade(
@@ -174,6 +248,7 @@ def api_grades_update(gid):
 
 
 @app.route("/api/grades/<int:gid>", methods=["DELETE"])
+@require_admin
 def api_grades_delete(gid):
     if db.delete_grade(gid):
         return ok(msg="delete ok")
@@ -182,11 +257,13 @@ def api_grades_delete(gid):
 
 # ---------- stats ----------
 @app.route("/api/stats/course-avg", methods=["GET"])
+@require_admin
 def api_stats_avg():
     return ok(db.stats_course_avg())
 
 
 @app.route("/api/stats/pass-rate", methods=["GET"])
+@require_admin
 def api_stats_pass():
     return ok(db.stats_pass_rate())
 

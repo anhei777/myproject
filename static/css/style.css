@@ -123,6 +123,11 @@ th { background: #f9fafb; }
 
 .chart-box { height: 320px; }
 
+.profile-box p {
+  margin-bottom: 8px;
+  font-size: 15px;
+}
+
 @media (max-width: 768px) {
   .home-grid { grid-template-columns: 1fr; }
   .form-row { flex-direction: column; }
