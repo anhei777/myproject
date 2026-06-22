@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成绩管理 - 学生成绩管理系统</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="header">
+    <h1>学生成绩管理系统</h1>
+    <div class="nav">
+      <a href="/index.html">首页</a>
+      <a href="/students.html">学生管理</a>
+      <a href="/grades.html">成绩管理</a>
+      <a href="/stats.html">成绩统计</a>
+      <a href="#" id="btnLogout">退出</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card">
+      <h2>录入成绩</h2>
+      <div class="form-row">
+        <select id="student_id"></select>
+        <select id="course_id"></select>
+        <input type="number" id="score" placeholder="分数" min="0" max="100" step="0.5">
+        <input type="text" id="exam_term" placeholder="学期" value="2025-2026-1">
+        <button id="btnAdd">录入</button>
+      </div>
+      <p class="msg" id="formMsg"></p>
+    </div>
+    <div class="card">
+      <h2>成绩列表</h2>
+      <div class="form-row">
+        <input type="text" id="keyword" placeholder="搜索姓名/班级/课程">
+        <button id="btnSearch">搜索</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>学号</th>
+            <th>姓名</th>
+            <th>班级</th>
+            <th>课程</th>
+            <th>分数</th>
+            <th>学期</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="gradeTable"></tbody>
+      </table>
+    </div>
+  </div>
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/grades.js"></script>
+</body>
+</html>
