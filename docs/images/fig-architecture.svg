@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 300" font-family="Microsoft YaHei, sans-serif">
+  <rect width="720" height="300" fill="#f8fafc"/>
+  <text x="360" y="28" text-anchor="middle" font-size="16" font-weight="bold" fill="#1e293b">þ 2-1 ûß;S¶„þ</text>
+  <rect x="280" y="45" width="160" height="44" rx="8" fill="#2563eb"/>
+  <text x="360" y="73" text-anchor="middle" font-size="13" fill="#fff">OÈh HTML/JS</text>
+  <text x="360" y="105" text-anchor="middle" font-size="11" fill="#64748b">fetch Ajax ÷B JSON</text>
+  <line x1="360" y1="115" x2="360" y2="135" stroke="#64748b" stroke-width="2"/>
+  <rect x="230" y="135" width="260" height="50" rx="8" fill="#fff" stroke="#2563eb" stroke-width="2"/>
+  <text x="360" y="165" text-anchor="middle" font-size="13" fill="#1e293b">Flask ï app.py</text>
+  <line x1="360" y1="185" x2="360" y2="205" stroke="#64748b" stroke-width="2"/>
+  <rect x="230" y="205" width="120" height="44" rx="8" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="290" y="232" text-anchor="middle" font-size="12" fill="#1e293b">db.py</text>
+  <rect x="370" y="205" width="120" height="44" rx="8" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="430" y="232" text-anchor="middle" font-size="12" fill="#1e293b">SQLite</text>
+  <line x1="290" y1="205" x2="430" y2="205" stroke="#64748b" stroke-width="1"/>
+</svg>
