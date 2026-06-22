@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>成绩统计 - 学生成绩管理系统</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <div class="header">
+    <h1>学生成绩管理系统</h1>
+    <div class="nav">
+      <a href="/index.html">首页</a>
+      <a href="/students.html">学生管理</a>
+      <a href="/grades.html">成绩管理</a>
+      <a href="/stats.html">成绩统计</a>
+      <a href="#" id="btnLogout">退出</a>
+    </div>
+  </div>
+  <div class="container">
+    <div class="card">
+      <h2>各科平均分</h2>
+      <div class="chart-box">
+        <canvas id="avgChart"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <h2>各科及格率（%）</h2>
+      <div class="chart-box">
+        <canvas id="passChart"></canvas>
+      </div>
+    </div>
+  </div>
+  <script src="/static/js/api.js"></script>
+  <script src="/static/js/stats.js"></script>
+</body>
+</html>
